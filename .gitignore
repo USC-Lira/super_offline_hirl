@@ -1,0 +1,5 @@
+slurm_outputs/
+slurm_scripts/
+checkpoints/
+dataset/
+wandb/
