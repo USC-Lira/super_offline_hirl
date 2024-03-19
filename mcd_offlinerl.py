@@ -19,24 +19,21 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, help="set the name of the experiment")
-parser.add_argument("--ver", type=str, help="set the experiment version")
-parser.add_argument("--data", type=str, help="set the data file for the experiment")
-parser.add_argument("--penalty", type=int, help="sets the penalty for evaluation")
 parser.add_argument("--numits", type=int, help="sets number of iterations")
-parser.add_argument("--lr", type=float, help="sets learning rate")
+parser.add_argument("--penalty", type=int, help="sets the penalty for evaluation")
+parser.add_argument("--data", type=str, help="set the data file for the experiment")
 parser.add_argument("--wandb", help="sets wandb to be true", action="store_true")
 args = parser.parse_args()
 
 exp_name = args.name
-exp_ver = args.ver
-data_path = args.data
-eval_penalty = -float(args.penalty)
 num_iterations = args.numits
-learning_rate = args.lr
+eval_penalty = -float(args.penalty)
+data_path = args.data
+learning_rate = 0.0005
 iswandb = args.wandb
 
 if iswandb:
-    wandb_hyperparameters = {'env_name': 'MountainCar-v0', 'exp_ver': exp_ver, 'num_iterations': num_iterations, 'learning_rate': learning_rate}
+    wandb_hyperparameters = {'env_name': 'MountainCar-v0', 'num_iterations': num_iterations, 'learning_rate': learning_rate}
     wandb.init(project="modified_hirl", name=exp_name, config=wandb_hyperparameters)
 
 class QNetwork(nn.Module):

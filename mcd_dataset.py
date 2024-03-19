@@ -4,7 +4,9 @@ import gymnasium as gym
 import numpy as np
 import torch
 import torch.nn as nn
+
 import os
+import argparse
 from PIL import Image, ImageDraw, ImageFont
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -115,22 +117,33 @@ def generate_dataset_clean(policy, env, num_episodes=1000):
             state = next_state
     return dataset
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--name", type=str, help="set the name of the experiment")
+parser.add_argument("--numeps", type=int, help="sets number of episodes")
+parser.add_argument("--penalty", type=int, help="sets the penalty for evaluation")
+parser.add_argument("--policy", type=str, help="optimal policy weights")
+parser.add_argument("--type", type=str, help="clean, ha, or noha")
+args = parser.parse_args()
+
+exp_name = args.name
+num_episodes = args.numeps
+penalty = -float(args.penalty)
+policy_path = '/home/jaiv/super_offlinerl/checkpoints/' + args.policy
+exp_type = args.type
+
 env = gym.make("MountainCar-v0")
 state_size = env.observation_space.shape[0]
 action_size = env.action_space.n
 
 optimal_policy = QNetwork(state_size, action_size).to(device)
-optimal_policy.load_state_dict(torch.load('/home/jaiv/super_offlinerl/checkpoints/mcd_dqn_hirl_p2_s2/dqn_5000.pth', map_location=device))
+optimal_policy.load_state_dict(torch.load(policy_path, map_location=device))
 optimal_policy.eval()
 
-# hyperparameters
-penalty = -2
-num_episodes = 2000
-# check optimal policy path
-# check if clean, ha, or noha
-# check file save path
+if exp_type == "clean": dataset = generate_dataset_clean(optimal_policy, env, num_episodes)
+elif exp_type == "ha": dataset = generate_dataset_ha(optimal_policy, env, num_episodes)
+elif exp_type == "noha": dataset = generate_dataset_noha(optimal_policy, env, num_episodes)
+else: print("check exp_type")
 
-dataset = generate_dataset_noha(optimal_policy, env, num_episodes)
 dataset = np.array(dataset, dtype=object)
 
 dataset_directory = './dataset'
@@ -138,7 +151,7 @@ if not os.path.exists(dataset_directory):
     os.makedirs(dataset_directory)
 
 # Now, save the dataset to file safely
-dataset_path = os.path.join(dataset_directory, 'mcd_hirl_p2_s2_2000_noha.pkl')
+dataset_path = os.path.join(dataset_directory, exp_name + '.pkl')
 with open(dataset_path, 'wb') as f:
     pickle.dump(dataset, f)
 

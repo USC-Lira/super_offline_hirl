@@ -310,9 +310,9 @@ def train(agent, n_episodes=2000, max_t=200, eps_start=1.0, eps_end=0.01, eps_de
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--name", type=str, help="set the name of the experiment")
-    parser.add_argument("--ver", type=str, help="set the version of the experiment")
     parser.add_argument("--numeps", type=int, help="sets number of episodes")
     parser.add_argument("--penalty", type=int, help="sets penalty")
+    parser.add_argument("--seed", type=int, help="sets seed for the QNetwork")
     parser.add_argument("--wandb", help="sets wandb to be true", action="store_true")
     args = parser.parse_args()
 
@@ -320,13 +320,14 @@ if __name__ == "__main__":
     experiment_version = args.ver
     n_episodes = args.numeps
     penalty = -float(args.penalty)
+    seed = args.seed 
     iswandb = args.wandb
     
-    if iswandb: wandb.init(project="modified_hirl", name=experiment_name, config={'env_name': 'MountainCar-v0', 'exp_ver': experiment_version, 'n_episodes': n_episodes, 'penalty': penalty})
+    if iswandb: wandb.init(project="modified_hirl", name=experiment_name, config={'env_name': 'MountainCar-v0', 'n_episodes': n_episodes, 'penalty': penalty})
 
     os.makedirs("./checkpoints/" + str(experiment_name), exist_ok=True)
     env = gym.make("MountainCar-v0", render_mode="rgb_array")
     state_size = 2
     action_size = 3
-    agent = Agent(state_size=state_size, action_size=action_size, seed=0)
+    agent = Agent(state_size=state_size, action_size=action_size, seed=seed)
     scores = train(agent, n_episodes)

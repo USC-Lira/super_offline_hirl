@@ -20,21 +20,23 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, help="set the name of the experiment")
-parser.add_argument("--penalty", type=int, help="sets the penalty for evaluation")
 parser.add_argument("--numeps", type=int, help="sets number of episodes")
 parser.add_argument("--numits", type=int, help="sets number of iterations")
+parser.add_argument("--penalty", type=int, help="sets the penalty for evaluation")
 parser.add_argument("--policy", type=str, help="optimal policy weights ")
 parser.add_argument("--type", type=str, help="clean, ha, or noha")
+parser.add_argument("--seed", type=int, help="sets seed for the QNetwork")
 parser.add_argument("--wandb", help="sets wandb to be true", action="store_true")
 args = parser.parse_args()
 
 exp_name = args.name
-penalty = -float(args.penalty)
 num_episodes = args.numeps
 num_iterations = args.numits
+penalty = -float(args.penalty)
 policy_path = '/home/jaiv/super_offlinerl/checkpoints/' + args.policy
 exp_type = args.type
 learning_rate = 0.0005
+seed = args.seed
 iswandb = args.wandb
 
 if iswandb:
@@ -150,7 +152,7 @@ env = gym.make("MountainCar-v0")
 state_size = env.observation_space.shape[0]
 action_size = env.action_space.n
 
-optimal_policy = QNetwork(state_size, action_size, seed=0).to(device)
+optimal_policy = QNetwork(state_size, action_size, seed=seed).to(device)
 optimal_policy.load_state_dict(torch.load(policy_path, map_location=device))
 optimal_policy.eval()
 
@@ -178,7 +180,7 @@ next_states = torch.tensor(next_states, dtype=torch.float).to(device)
 dones = torch.tensor(dones, dtype=torch.float).to(device)
 
 # Model, optimizer, and loss function
-model = QNetwork(state_size, action_size, seed=0).to(device)
+model = QNetwork(state_size, action_size, seed=seed).to(device)
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 criterion = nn.MSELoss()
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.999)
