@@ -33,7 +33,7 @@ Arguments:
 
 ### Combined Collecting Experiences and Conducting Offline RL: using mcd_combined_offlinerl
 ```
-python mc_offlinerl.py --name experiment_name --numeps 2000 --numits 5000 --penalty 2 --policy policy_path --type intervention_type --seed 0 --wandb
+python mc_offlinerl.py --name experiment_name --numeps 2000 --numits 20000 --penalty 2 --policy policy_path --type intervention_type --seed 0 --wandb
 ```
 Arguments:
 - --name: Set the name of the experiment.
@@ -60,7 +60,7 @@ NOTE: Currently, you will need to modify the policy_path variable in this line o
 
 ### Conducting Offline RL: using mcd_offlinerl
 ```
-python mc_offlinerl.py --name experiment_name --numits 5000  --penalty 2 --data data_path --wandb
+python mc_offlinerl.py --name experiment_name --numits 20000 --penalty 2 --data data_path --wandb
 ```
 Arguments:
 - --name: Set the name of the experiment.
