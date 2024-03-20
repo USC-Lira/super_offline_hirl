@@ -317,7 +317,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     experiment_name = args.name
-    experiment_version = args.ver
     n_episodes = args.numeps
     penalty = -float(args.penalty)
     seed = args.seed 
